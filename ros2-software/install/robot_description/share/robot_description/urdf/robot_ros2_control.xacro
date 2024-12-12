@@ -1,0 +1,63 @@
+<?xml version="1.0"?>
+<robot name="robot" xmlns:xacro="http://www.ros.org/wiki/xacro">
+
+
+  <transmission name="wheel_right_transmission">
+    <plugin>transmission_interface/SimpleTransmission</plugin>
+    <actuator name="wheel_right_motor" role="actuator_right"/>
+    <joint name="wheel_right_joint" role="joint_right">
+      <mechanical_reduction>56.0</mechanical_reduction>
+    </joint>
+  </transmission>
+
+  <transmission name="wheel_left_transmission">
+    <plugin>transmission_interface/SimpleTransmission</plugin>
+    <actuator name="wheel_left_motor" role="actuator_left"/>
+    <joint name="wheel_left_joint" role="joint_left">
+      <mechanical_reduction>56.0</mechanical_reduction>
+    </joint>
+  </transmission>
+
+
+  <ros2_control name="RobotSystem" type="system">
+
+    <!-- ========================== Hardware ========================== -->
+    <!-- Hardware simulated by Gazebo (could be the real hardware) -->
+    <!-- https://control.ros.org/master/doc/gazebo_ros2_control/doc/index.html -->
+    <hardware>
+      <plugin>gazebo_ros2_control/GazeboSystem</plugin>
+    </hardware>
+    
+    <!-- ========================== Interfaces ========================== -->
+    <!-- ros2_control -->
+    <joint name="wheel_right_joint">
+      <command_interface name="velocity">
+        <param name="min">-10</param>
+        <param name="max">10</param>
+      </command_interface>
+      <state_interface name="position" />
+      <state_interface name="velocity" />
+    </joint>
+
+    <joint name="wheel_left_joint">
+      <command_interface name="velocity">
+        <param name="min">-10</param>
+        <param name="max">10</param>
+      </command_interface>
+      <state_interface name="position" />
+      <state_interface name="velocity" />
+    </joint>
+      
+  </ros2_control>
+  
+  <!-- https://control.ros.org/master/doc/gazebo_ros2_control/doc/index.html -->
+  <!-- ROS 2 Control -->
+  <gazebo>
+    <plugin name="gazebo_ros2_control" filename="libgazebo_ros2_control.so">
+      <robot_param>robot_description</robot_param>
+      <robot_param_node>robot_state_publisher</robot_param_node>
+      <parameters>$(find robot_description)/config/robot_controllers.yaml</parameters>
+    </plugin>
+  </gazebo>
+
+</robot>

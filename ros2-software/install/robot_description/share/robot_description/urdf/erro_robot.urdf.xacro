@@ -1,0 +1,231 @@
+<?xml version="1.0"?>
+
+<robot name="robot" xmlns:xacro="http://ros.org/wiki/xacro">
+
+  <!-- Gazebo Parameters -->
+  <xacro:include filename="$(find robot_description)/urdf/robot_gazebo.xacro" />
+  <!-- ros2_control plugins -->
+  <xacro:include filename="$(find robot_description)/urdf/robot_ros2_control.xacro" />
+
+  
+  <!-- ========================== Variables ========================== -->
+  <!-- Wheel properties -->
+  <xacro:property name="wheel_diameter" value="0.066"/>
+  <xacro:property name="wheel_radius" value="${wheel_diameter/2}"/>
+  <xacro:property name="wheel_length" value="0.028"/>
+  <xacro:property name="wheel_mass" value="0.0530086090966721"/>
+  <!-- Wheel moment of inertia equation -->
+  <xacro:property name="wheel_inertia_Ixx" value="${wheel_mass*(3*wheel_radius*wheel_radius + wheel_length*wheel_length)/12}"/>
+  <xacro:property name="wheel_inertia_Iyy" value="${wheel_inertia_Ixx}"/>
+  <xacro:property name="wheel_inertia_Izz" value="${wheel_mass*wheel_radius*wheel_radius/2}"/>
+  <!-- Chassi properties -->
+  <xacro:property name="chassis_diameter" value="0.14"/>
+  <xacro:property name="chassis_radius" value="${chassis_diameter/2}"/>
+  <xacro:property name="chassis_thickness" value="0.008"/>
+  <xacro:property name="chassis_distance_from_floor" value="0.01"/>
+  <xacro:property name="chassis_mass" value="8.2573504E-01"/>
+  <!-- Chassi moment of inertia equation -->
+  <xacro:property name="chassis_inertia_Ixx" value="${chassis_mass*(3*chassis_radius*chassis_radius + chassis_thickness*chassis_thickness)/12}"/>
+  <xacro:property name="chassis_inertia_Iyy" value="${chassis_inertia_Ixx}"/>
+  <xacro:property name="chassis_inertia_Izz" value="${chassis_mass*chassis_radius*chassis_radius/2}"/>
+  <!-- Caster wheel properties -->
+  <xacro:property name="caster_wheel_diameter" value="${chassis_distance_from_floor}"/>
+  <xacro:property name="caster_wheel_radius" value="${caster_wheel_diameter/2}"/>
+  <xacro:property name="caster_wheel_mass" value="1.44379265037903E-06"/>
+  <!-- Caster wheel moment of inertia equation -->
+  <xacro:property name="caster_wheel_inertia_Ixx" value="${2*caster_wheel_mass*caster_wheel_radius*caster_wheel_radius/5}"/>
+  <xacro:property name="caster_wheel_inertia_Iyy" value="${caster_wheel_inertia_Ixx}"/>
+  <xacro:property name="caster_wheel_inertia_Izz" value="${caster_wheel_inertia_Ixx}"/>
+  <!-- Degrees to radians-->
+  <xacro:property name="deg2rad" value="${pi/180}"/>
+  <!-- Meters to centimeters -->
+  <xacro:property name="cm2m" value="${1/100}"/>
+
+
+  <!-- ========================== Links ========================== -->
+  <!-- Reference -->
+  <link name="base_footprint"/>
+  <!-- Chassis -->
+  <link name="base_link">
+    <visual>
+      <origin xyz="0 0 0" rpy="0 0 0" />
+      <geometry>
+        <cylinder radius="${chassis_radius}" length="${chassis_thickness}"/>
+      </geometry>
+    </visual>
+    <!-- Defining the geometry and params for Gazebo simulation -->
+    <collision>
+      <origin xyz="0 0 0" rpy="0 0 0" />
+      <geometry>
+        <cylinder radius="${chassis_radius}" length="${chassis_thickness}"/>
+      </geometry>
+    </collision>
+    <inertial>
+      <origin xyz="0 0 0.025" rpy="0.0 0 0"/>
+      <mass value="${chassis_mass}"/>
+      <inertia ixx="${chassis_inertia_Ixx}" ixy="0" ixz="0"
+          iyy="${chassis_inertia_Iyy}" iyz="0"
+          izz="${chassis_inertia_Izz}"/>
+    </inertial>
+  </link>
+  <!-- Right wheel -->
+  <link name="wheel_right_link">
+    <visual>
+      <geometry>
+          <cylinder radius="${wheel_radius}" length="${wheel_length}"/>
+      </geometry>
+      <origin xyz="0 0 0" rpy="${90*deg2rad} 0 0"/>
+    </visual>
+    <!-- Defining the geometry and params for Gazebo simulation -->
+    <collision>
+      <geometry>
+          <cylinder radius="${wheel_radius}" length="${wheel_length}"/>
+      </geometry>
+      <origin xyz="0 ${-0.015} 0" rpy="${90*deg2rad} 0 0"/>
+    </collision>
+    <inertial>
+      <origin xyz="0 -0.014 0" rpy="0 0 0" />
+      <mass value="${wheel_mass}"/>
+      <inertia ixx="${wheel_inertia_Ixx}" ixy="0" ixz="0"
+        iyy="${wheel_inertia_Iyy}" iyz="0"
+        izz="${wheel_inertia_Izz}"/>
+    </inertial>
+  </link>
+  <!-- Left wheel -->
+  <link name="wheel_left_link">
+    <visual>
+      <geometry>
+          <cylinder radius="${wheel_radius}" length="${wheel_length}"/>
+      </geometry>
+      <origin xyz="0 0 0" rpy="${90*deg2rad} 0 0"/>
+    </visual>
+    <!-- Defining the geometry and params for Gazebo simulation -->
+    <collision>
+        <geometry>
+            <cylinder radius="${wheel_radius}" length="${wheel_length}"/>
+        </geometry>
+        <origin xyz="0 ${0.015} 0" rpy="${90*deg2rad} 0 0"/>
+    </collision>
+    <inertial>
+        <origin xyz="0 0.014 0" rpy="0 0 0" />
+        <mass value="${wheel_mass}"/>
+        <inertia ixx="${wheel_inertia_Ixx}" ixy="0" ixz="0"
+          iyy="${wheel_inertia_Iyy}" iyz="0"
+          izz="${wheel_inertia_Izz}"/>
+    </inertial>
+  </link>
+  <!-- Front caster wheel-->
+  <link name="caster_front_link">
+    <visual>
+      <geometry>
+          <sphere radius="${caster_wheel_diameter/2}"/>
+      </geometry>
+      <origin xyz="0 0 0" rpy="0 0 0"/>
+    </visual>
+    <!-- Defining the geometry and params for Gazebo simulation -->
+    <collision>
+        <geometry>
+            <sphere radius="${caster_wheel_diameter/2}"/>
+        </geometry>
+        <origin xyz="0 0 0" rpy="0 0 0"/>
+    </collision>
+    <inertial>
+      <origin xyz="0 0 0" rpy="0 0 0" />
+        <mass value="${caster_wheel_mass}"/>
+        <inertia ixx="${caster_wheel_inertia_Ixx}" ixy="0" ixz="0"
+          iyy="${caster_wheel_inertia_Iyy}" iyz="0"
+          izz="${caster_wheel_inertia_Izz}"/>
+    </inertial>
+  </link>
+  <!-- Rear caster wheel -->
+  <link name="caster_rear_link">
+    <visual>
+      <geometry>
+          <sphere radius="${caster_wheel_diameter/2}"/>
+      </geometry>
+      <origin xyz="0 0 0" rpy="0 0 0"/>
+    </visual>
+    <!-- Defining the geometry and params for Gazebo simulation -->
+    <collision>
+        <geometry>
+            <sphere radius="${caster_wheel_diameter/2}"/>
+        </geometry>
+        <origin xyz="0 0 0" rpy="0 0 0"/>
+    </collision>
+    <inertial>
+        <origin xyz="0 0 0" rpy="0 0 0" />
+        <mass value="${caster_wheel_mass}"/>
+        <inertia ixx="${caster_wheel_inertia_Ixx}" ixy="0" ixz="0"
+          iyy="${caster_wheel_inertia_Iyy}" iyz="0"
+          izz="${caster_wheel_inertia_Izz}"/>
+    </inertial>
+  </link>
+  <!-- IMU sensor -->
+  <link name="imu_link">
+    <visual>
+      <origin xyz="0 0 0" rpy="0 0 0" />
+      <geometry>
+        <mesh filename="package://bumperbot_description/meshes/imu_link.STL" />
+      </geometry>
+      <material name="">
+        <color rgba="0.792156862745098 0.819607843137255 0.933333333333333 1" />
+      </material>
+    </visual>
+    <collision>
+      <origin xyz="0 0 0" rpy="0 0 0" />
+      <geometry>
+        <mesh filename="package://bumperbot_description/meshes/imu_link.STL" />
+      </geometry>
+    </collision>
+    <inertial>
+      <origin xyz="-0.00552433659106688 0.000168210391520346 0.000514000497342681" rpy="0 0 0" />
+      <mass value="0.000528415362211671" />
+      <inertia ixx="1.46176048428261E-08" ixy="1.40015117949421E-10" ixz="-1.99633872937403E-12"
+               iyy="8.59662482954888E-09" iyz="7.52375112767959E-12"
+               izz="2.30279421279312E-08" />
+    </inertial>
+  </link>
+
+
+  <!-- ========================== Joints ========================== -->
+  <!-- Chassis -->
+  <joint name="base_joint" type="fixed">
+    <parent link="base_footprint"/>
+    <child link="base_link"/>
+    <origin xyz="0 0 ${chassis_distance_from_floor}" rpy="0 0 0"/>
+  </joint>
+  <!-- Right wheel -->
+  <joint name="wheel_right_joint" type="continuous">
+    <parent link="base_link"/>
+    <child link="wheel_right_link"/>
+    <origin xyz="0 ${-(wheel_length + chassis_diameter)/2} ${wheel_radius - chassis_distance_from_floor}" rpy="0 0 0"/>
+    <axis xyz="0 1 0" />
+  </joint>
+  <!-- Left wheel -->
+  <joint name="wheel_left_joint" type="continuous">
+    <parent link="base_link"/>
+    <child link="wheel_left_link"/>
+    <origin xyz="0 ${(wheel_length + chassis_diameter)/2} ${wheel_radius - chassis_distance_from_floor}" rpy="0 0 0"/>
+    <axis xyz="0 1 0" />
+  </joint>
+  <!-- Front caster wheel -->
+  <joint name="caster_front_joint" type="fixed">
+    <parent link="base_link"/>
+    <child link="caster_front_link"/>
+    <origin xyz="${chassis_radius - 2*cm2m} 0 ${-chassis_distance_from_floor/2}" rpy="0 0 0"/>
+  </joint>
+  <!-- Rear caster wheel -->
+  <joint name="caster_rear_joint" type="fixed">
+    <parent link="base_link"/>
+    <child link="caster_rear_link"/>
+    <origin xyz="${-(chassis_radius - 2*cm2m)} 0 ${-chassis_distance_from_floor/2}" rpy="0 0 0"/>
+  </joint>
+  <!-- IMU sensor -->
+  <joint name="imu_joint" type="fixed">
+    <origin xyz="0 0 0.0698986241758014" rpy="0 0 0" />
+    <parent link="base_link" />
+    <child link="imu_link" />
+    <axis xyz="0 0 0" />
+  </joint>
+
+</robot>
