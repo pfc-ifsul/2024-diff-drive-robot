@@ -102,8 +102,7 @@ sub_topic_config_t wheel_speed_topic_sub_config = {
 
 void setup() {
   Serial.begin(115200);
-  set_microros_wifi_transports("OsirMax_Casa988", "1975CvbV", "192.168.18.69", 8888);
-  //set_microros_wifi_transports("MI-9", "esp32-ifsul", "192.168.255.113", 8888);
+  set_microros_wifi_transports("ssid", "password", "ip", 8888);
   delay(2000);
 
   /* Inicialização dos mutex */
